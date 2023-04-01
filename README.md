@@ -1,2 +1,2 @@
-# ChatV
-ChatUX using AI written using Vlang (Vlang.io)
+# SK-FAPS-Stack
+SvelteKit-FastAPI-Alembic-Postgres-SQLModel Tech Stack
