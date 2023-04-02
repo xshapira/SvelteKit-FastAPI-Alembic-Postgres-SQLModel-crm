@@ -1,3 +1,5 @@
+from sqlalchemy.dialects.postgresql import TEXT
+
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
@@ -16,6 +18,7 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     posts: List["Post"] = Relationship(back_populates="author")
+    prompts: List["Prompt"] = Relationship(back_populates="author")
 
 class UserCreate(UserBase):
     pass
@@ -36,7 +39,7 @@ class UserUpdate(SQLModel):
 # Post
 class PostBase(SQLModel):
     title: str
-    body: str
+    body: str = Field(sa_column=Column(TEXT))
     author_id: Optional[int] = Field(default=None, foreign_key="user.id")
 
 
@@ -62,6 +65,35 @@ class PostReadWithUser(PostRead):
 class UserReadWithPosts(UserRead):
     posts: List[PostRead] = []
 
+###############################################################################
+# Prompt
+class PromptBase(SQLModel):
+    title: str
+    body: str = Field(sa_column=Column(TEXT))
+    author_id: Optional[int] = Field(default=None, foreign_key="user.id")
+
+
+class Prompt(PromptBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    author: Optional[User] = Relationship(back_populates="prompts")
+
+class PromptRead(PromptBase):
+    id: Optional[int] = None
+
+class PromptCreate(PromptBase):
+    pass
+
+class PromptUpdate(SQLModel):
+    id: Optional[str] = None
+    title: Optional[str] = None
+    body: Optional[str] = None
+    author_id: Optional[int] = None
+
+class PromptReadWithUser(PromptRead):
+    author: Optional[UserRead] = None
+
+class UserReadWithPrompts(UserRead):
+    prompts: List[PromptRead] = []
 ###############################################################################
 # Auth
 class Login(SQLModel):
